@@ -2,8 +2,7 @@ from typing import Type, Union
 import datetime
 from sqlalchemy import Column, DateTime, Float, String, Text, text, ForeignKey, SMALLINT
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, declarative_base
 
 Base = declarative_base()
 metadata = Base.metadata
@@ -227,3 +226,62 @@ class AppCalendar(Base):
     ac_datetime: datetime = Column(DateTime)
 
     company = relationship("CompanyInfoGeneral", back_populates="app_calendars")
+
+
+if __name__ == "__main__":
+    import asyncio
+    from db.database import async_session, engine
+    from sqlalchemy import select, func
+    from sqlalchemy import and_
+    from sqlalchemy.orm import Session, selectinload
+    from sqlalchemy import select, func
+    from db.models import (
+        CompanyInfoShareholder as Shareholder,
+        CompanyInfoFinancial as Financial,
+        CompanyInfoSubscriber as Subscriber,
+        CompanyInfoPrediction as Prediction,
+        CompanyInfoGeneral as General,
+        AppCalendar as Calendar,
+    )
+    from db.dals.company_dal import Company
+    from db import database
+
+    async def main():
+        # print(database.DB_URL, database.ASYNC_DB_URL)
+        async with async_session() as session:
+            async with session.begin():
+                ci_code = 344860
+                stmt = (
+                    select(CompanyInfoGeneral)
+                    .where(CompanyInfoGeneral.ci_code == ci_code)
+                    .execution_options(populate_existing=True)
+                    .options(
+                        selectinload(CompanyInfoGeneral.shareholders),
+                        selectinload(CompanyInfoGeneral.subscribers),
+                        selectinload(CompanyInfoGeneral.financials),
+                        selectinload(CompanyInfoGeneral.app_calendars),
+                        selectinload(CompanyInfoGeneral.predictions),
+                    )
+                )
+
+                # will refresh all matching User objects as well as the related
+                # Address objects
+                cig = await session.execute(stmt)
+                result = cig.scalars().first()
+                # for field_name in Shareholder.__dict__:
+                #     f"{i}"
+                # for i in result.shareholders:
+                #     print(
+                #         i.ci_idx,
+                #         i.cis_idx,
+                #     )
+                print(result.ci_idx, result.ci_code, result.ci_name, result.ci_market_separation)
+
+                print(result.shareholders)
+                print(result.subscribers)
+                print(result.financials)
+                print(result.predictions)
+                # print(dict(result.shareholders))
+            await engine.dispose()
+
+    asyncio.run(main(), debug=True)

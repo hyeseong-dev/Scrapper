@@ -5,7 +5,7 @@ from config.settings import settings
 
 from utilities.time_measure import timeit
 from sqlalchemy import and_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from db.models import (
     CompanyInfoShareholder as Shareholder,
     CompanyInfoFinancial as Financial,
@@ -21,7 +21,7 @@ from schemas.prediction import PredictionCreateSchema
 from schemas.shareholder import ShareholderCreateSchema
 from schemas.subscriber import SubscriberCreateSchema
 
-from db.config import async_session, engine
+from db.database import async_session, engine
 from config.config_log import logging
 
 logger = logging.getLogger("info-logger")
@@ -78,10 +78,21 @@ class Company:
         return [row[0][:10] for row in q]
 
     async def read(self, ci_code: str) -> Optional[General]:
-        q = await self._db_session.execute(select(General).where(General.ci_code == ci_code))
+        q = await self._db_session.execute(
+            select(General)
+            .where(General.ci_code == ci_code)
+            .execution_options(populate_existing=True)
+            .options(
+                selectinload(General.shareholders),
+                selectinload(General.subscribers),
+                selectinload(General.financials),
+                selectinload(General.app_calendars),
+                selectinload(General.predictions),
+            )
+        )
         result = q.scalars().first()
         if result:
-            return result.ci_code
+            return result
         return
 
     async def update(
@@ -94,32 +105,20 @@ class Company:
         calendars: List[Calendar],
     ) -> bool:
 
-        general.shareholders = []
-        general.shareholders = shareholders
-        general.financials = []
-        general.financials = financials
-        general.subscribers = []
-        general.subscribers = subscribers
-        general.predictions = []
-        general.predictions = predictions
-        general.app_calendars = []
-        general.app_calendars = calendars
+        existing_general = await self.read(general.ci_code)
 
-        # query = (
-        #     update(General)
-        #     .where(General.ci_code == ci_code)
-        #     .values(
-        #         **new_company.__dict__,
-        #         shareholders=shareholders,
-        #         financials=financials,
-        #         subscribers=subscribers,
-        #         predictions=predictions,
-        #         app_calendars=calendars,
-        #     )
-        # )
-        # result = await self._db_session.execute(query)
-        # affected_rows = result.rowcount
-        await self._db_session.commit()
+        existing_general.shareholders = []
+        existing_general.financials = []
+        existing_general.subscribers = []
+        existing_general.predictions = []
+        existing_general.app_calendars = []
+
+        existing_general.shareholders = shareholders
+        existing_general.financials = financials
+        existing_general.subscribers = subscribers
+        existing_general.predictions = predictions
+        existing_general.app_calendars = calendars
+
         return True
 
     async def upsert(
@@ -140,9 +139,9 @@ class Company:
         predictions = [Prediction(**prediction.dict()) for prediction in predictions]
         calendars = [Calendar(**calendar.dict()) for calendar in calendars]
 
-        existed_ci_code = await self.read(ci_code)
-        logger.info(f"existed_ci_code: {existed_ci_code}")
-        if existed_ci_code is not None:
+        existed_general = await self.read(ci_code)
+        if existed_general is not None:
+            logger.info(f"existed_ci_code: {existed_general.ci_code}")
             result = await self.update(
                 general,
                 shareholders,
@@ -194,10 +193,16 @@ if __name__ == "__main__":
             #     r = await company_dal.delist(r.ci_name)
             #     print(r)
             async with session.begin():
-                rs: General = await company_dal.get_one()
+                # rs: General = await company_dal.get_one()
                 # print([r.ci_name for r in rs])
+                # print(rs)
+                rs = await company_dal.read(358570)
                 print(rs)
-
+                print(rs.shareholders)
+                print(rs.subscribers)
+                print(rs.predictions)
+                print(rs.financials)
+                # await company_dal.update(rs)
             # r = await company_dal.get_all_delisted_companies_name()
             # print(r, len(r))
         await engine.dispose()

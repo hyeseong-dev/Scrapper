@@ -1,7 +1,7 @@
 import os
 from pydantic import BaseSettings, SecretStr
 import pathlib
-
+from dotenv import load_dotenv
 
 config_path = pathlib.Path(__file__).resolve().parent
 
@@ -118,14 +118,14 @@ if __name__ == "__main__":
     print(settings.LISTING_SERVER_IP)
     print(settings.WEB_SERVER_IP)
     print(settings.DB_HOST)
-    print(settings.DB_IPOLISTING)
-    print(settings.DB_GOOGLENEWS)
-    print(settings.DB_USER)
-    print(settings.DB_PASSWORD)
-    print(settings.DB_PORT)
-    print(settings.DB_NAME)
-    print(settings.SLACK_WEB_HOOK_URL)
-    print(settings.REALTIME_PRICE_PAST_API)
-    print(settings.REALTIME_PRICE_API)
-    print(settings.REALTIME_PRICE_API)
-    print(settings.PROJECT_PATH)
+    # print(settings.DB_IPOLISTING)
+    # print(settings.DB_GOOGLENEWS)
+    # print(settings.DB_USER)
+    # print(settings.DB_PASSWORD)
+    # print(settings.DB_PORT)
+    # print(settings.DB_NAME)
+    # print(settings.SLACK_WEB_HOOK_URL)
+    # print(settings.REALTIME_PRICE_PAST_API)
+    # print(settings.REALTIME_PRICE_API)
+    # print(settings.REALTIME_PRICE_API)
+    # print(settings.PROJECT_PATH)

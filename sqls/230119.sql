@@ -1,17 +1,20 @@
 ALTER TABLE
-    test_trustinv.company_info_general MODIFY COLUMN ci_idx INT AUTO_INCREMENT PRIMARY KEY;
+    trustinv.company_info_prediction MODIFY COLUMN ci_participation BIGINT(20);
 
 ALTER TABLE
-    test_trustinv.company_info_financial MODIFY COLUMN cif_idx INT AUTO_INCREMENT PRIMARY KEY;
+    trustinv.company_info_general MODIFY COLUMN ci_idx INT AUTO_INCREMENT PRIMARY KEY;
 
 ALTER TABLE
-    test_trustinv.company_info_prediction MODIFY COLUMN cip_idx INT AUTO_INCREMENT PRIMARY KEY;
+    trustinv.company_info_financial MODIFY COLUMN cif_idx INT AUTO_INCREMENT PRIMARY KEY;
 
 ALTER TABLE
-    test_trustinv.company_info_shareholder MODIFY COLUMN cis_idx INT AUTO_INCREMENT PRIMARY KEY;
+    trustinv.company_info_prediction MODIFY COLUMN cip_idx INT AUTO_INCREMENT PRIMARY KEY;
 
 ALTER TABLE
-    test_trustinv.company_info_subscriber MODIFY COLUMN cis_idx INT AUTO_INCREMENT PRIMARY KEY;
+    trustinv.company_info_shareholder MODIFY COLUMN cis_idx INT AUTO_INCREMENT PRIMARY KEY;
+
+ALTER TABLE
+    trustinv.company_info_subscriber MODIFY COLUMN cis_idx INT AUTO_INCREMENT PRIMARY KEY;
 
 -- 기존 B디비의 데이터가 들어 있는 테이블을 A디비에 새로 생성함.
 

@@ -7,7 +7,7 @@ from datetime import datetime
 
 import bs4
 from bs4 import BeautifulSoup
-from db.config import async_session
+from db.database import async_session
 from db.dals.company_dal import Company
 from utilities.time_measure import timeit
 from apps.ipo.agents import get_user_agents

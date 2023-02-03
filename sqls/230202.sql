@@ -1,0 +1,8 @@
+GRANT
+    ALL PRIVILEGES ON *.* TO 'user' @'client_ip' IDENTIFIED BY 'password';
+
+GRANT
+    ALL PRIVILEGES ON *.* TO 'root' @'175.209.202.66' IDENTIFIED BY 'dara100400!';
+
+GRANT
+    ALL PRIVILEGES ON *.* TO 'trustinv' @'175.209.202.66' IDENTIFIED BY 'bV9pmU9F3BF@K';

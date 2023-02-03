@@ -7,7 +7,7 @@ import a_tags
 from apps.ipo.tabs import tab1, tab2, tab3, tab4, tab5
 
 from config.settings import IPO_URL
-from db.config import engine, async_session
+from db.database import engine, async_session
 from db.dals.company_dal import Company
 from schemas.general import GeneralCreateSchema
 from schemas.subscriber import SubscriberCreateSchema
