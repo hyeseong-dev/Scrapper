@@ -20,9 +20,9 @@ async def load_env(file_path: str, filename: str = "env.yaml"):
 
 
 if __name__ == "__main__":
-
+    import os
     async def main():
-        config_path = "/Users/trustinvestpartner/Projects/trustinv/bs4_ipo/config"
+        config_path = f"{os.getcwd()}/config"
         env = await load_env(config_path, "env.yaml")
         print(env.DEV)
 

@@ -220,5 +220,11 @@ cython_debug/
 # Poetry local configuration file - https://python-poetry.org/docs/configuration/#local-configuration
 poetry.toml
 
-
+# notebooks
+logging.ipynb
+main.ipynb
 # End of https://www.toptal.com/developers/gitignore/api/emacs,python
+
+# sqls
+/sqls
+/notebooks
